@@ -1,0 +1,62 @@
+using System;
+using System.Management;
+
+enum PerfCounterType : ulong
+{ 
+   	PERF_COUNTER_RAWCOUNT_HEX  = 0,
+   	PERF_COUNTER_LARGE_RAWCOUNT_HEX  = 256,
+   	PERF_COUNTER_TEXT  = 2816,
+   	PERF_COUNTER_RAWCOUNT  = 65536,
+   	PERF_COUNTER_LARGE_RAWCOUNT  = 65792,
+   	PERF_DOUBLE_RAW  = 73728,
+   	PERF_COUNTER_DELTA  = 4195328,
+   	PERF_COUNTER_LARGE_DELTA   = 4195584,
+   	PERF_SAMPLE_COUNTER  = 4260864,
+   	PERF_COUNTER_QUEUELEN_TYPE  = 4523008,
+   	PERF_COUNTER_LARGE_QUEUELEN_TYPE  = 4523264,
+   	PERF_COUNTER_100NS_QUEUELEN_TYPE  = 5571840,
+   	PERF_COUNTER_OBJ_TIME_QUEUELEN_TYPE  = 6620416,
+   	PERF_COUNTER_COUNTER  = 272696320,
+   	PERF_COUNTER_BULK_COUNT  = 272696576,
+   	PERF_RAW_FRACTION  = 537003008,
+   	PERF_COUNTER_TIMER  = 541132032,
+   	PERF_PRECISION_SYSTEM_TIMER  = 541525248,
+   	PERF_100NSEC_TIMER  = 542180608,
+   	PERF_PRECISION_100NS_TIMER  = 542573824,
+   	PERF_OBJ_TIME_TIMER  = 543229184,
+   	PERF_PRECISION_OBJECT_TIMER  = 543622400,
+   	PERF_SAMPLE_FRACTION  = 549585920,
+   	PERF_COUNTER_TIMER_INV  = 557909248,
+   	PERF_100NSEC_TIMER_INV  = 558957824,
+   	PERF_COUNTER_MULTI_TIMER  = 574686464,
+   	PERF_100NSEC_MULTI_TIMER  = 575735040,
+   	PERF_COUNTER_MULTI_TIMER_INV  = 591463680,
+   	PERF_100NSEC_MULTI_TIMER_INV  = 592512256,
+   	PERF_AVERAGE_TIMER  = 805438464,
+   	PERF_ELAPSED_TIME  = 807666944,
+   	PERF_COUNTER_NODATA  = 1073742336,
+   	PERF_AVERAGE_BULK  = 1073874176,
+   	PERF_SAMPLE_BASE  = 1073939457,
+   	PERF_AVERAGE_BASE  = 1073939458,
+   	PERF_RAW_BASE  = 1073939459,
+   	PERF_PRECISION_TIMESTAMP  = 1073939712,
+   	PERF_LARGE_RAW_BASE  = 1073939715,
+   	PERF_COUNTER_MULTI_BASE  = 1107494144,
+   	PERF_COUNTER_HISTOGRAM_TYPE  = 2147483648
+}; 
+class PerfCounters {
+public static void Main(string[] args) {
+   ManagementClass c = new ManagementClass("Win32_PerfRawData");
+   foreach(ManagementClass mc in c.GetSubclasses()) {
+      Console.WriteLine("Class: {0}", mc["__CLASS"]);
+      foreach(PropertyData pd in mc.Properties) {
+         try {
+            PerfCounterType ct = (PerfCounterType)ulong.Parse(
+               mc.GetPropertyQualifierValue(pd.Name, "CounterType").ToString());
+               Console.WriteLine("   {0} : {1}", pd.Name, ct);
+         } catch (Exception e) {}
+      }
+      Console.WriteLine();
+   }
+}
+}
